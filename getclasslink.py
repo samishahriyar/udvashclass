@@ -1,6 +1,6 @@
 def getYTClassLink(registrationNumber, password, udvashClassLink):
 
-  import requests
+  import requests, re
 
   session = requests.session()
 
@@ -10,23 +10,23 @@ def getYTClassLink(registrationNumber, password, udvashClassLink):
 
   HTMLList = requestHTML.split(";")
 
-  for eachPart in HTMLList:
+  pattern = re.compile("data-youtube-video=['\"][a-zA-Z0-9]+['\"] ")
 
-    if "let videoId" in eachPart:
+  if pattern:
+    span = pattern.search(requestHTML).span()
 
-      requestWithVideoID = eachPart
+    return "https://www.youtube.com/watch?v="+requestHTML[span[0]+20: span[1]-2]
 
-      break
+  else:
 
-  return "https://www.youtube.com/watch?v="+requestWithVideoID.split("'")[-2]
-
-
+    return "The class may not be downloaded right now or you may have provided wrong information, sorry for that."
 
 if __name__=="__main__":
+
   reg = input("Enter your Udvash Registration number: ")
 
   passw = input("Enter your Udvash Password: ")
 
   classLink = input("Enter the link of your desired class: ")
 
-  print("Here is the link of the class in youtube:", getYTClassLink(reg, passw, classLink))
+  print("\n\nHere is the link of the class:", getYTClassLink(reg, passw, classLink))
